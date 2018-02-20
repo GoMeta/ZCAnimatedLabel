@@ -34,6 +34,11 @@ typedef NS_ENUM(NSInteger, ZCAnimatedLabelAppearDirection)
 @property (nonatomic, assign) CGFloat animationDelay;
 
 /**
+ * True animation duration
+ */
+@property (nonatomic, readonly) double trueDuration;
+
+/**
  * duration for the label to finish animation on screen
  */
 @property (nonatomic, readonly) CGFloat totoalAnimationDuration;

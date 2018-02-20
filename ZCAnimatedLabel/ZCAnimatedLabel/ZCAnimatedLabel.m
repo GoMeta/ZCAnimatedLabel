@@ -16,6 +16,7 @@
 @property (nonatomic, assign) NSTimeInterval animationTime;
 @property (nonatomic, assign) BOOL useDefaultDrawing;
 @property (nonatomic, assign) NSTimeInterval animationDurationTotal;
+@property (nonatomic, assign) double trueDuration;
 @property (nonatomic, assign) BOOL animatingAppear; //we are during appear stage or not
 @property (nonatomic, strong) ZCCoreTextLayout *layoutTool;
 @property (nonatomic, assign) NSTimeInterval animationStarTime;
@@ -54,6 +55,8 @@
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(timerTick:)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     _displayLink.paused = YES;
+
+    _trueDuration = 0.0;
     
     _animationDuration = 1;
     _animationDelay = 0.1;
@@ -168,6 +171,7 @@
     }
     
     [self.layoutTool layoutWithAttributedString:self.attributedString constainedToSize:self.frame.size];
+    __block CGFloat trueDuration = 0;
     __block CGFloat maxDuration = 0;
     [self.layoutTool.textBlocks enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         ZCTextBlock *textBlock = obj;
@@ -179,12 +183,14 @@
         if (realStartDelay > maxDuration) {
             maxDuration = realStartDelay;
         }
+        trueDuration = startDelay;
 
         if (self.layerBased) {
             [self.layer addSublayer:textBlock.textBlockLayer];
         }
     }];
     
+    self.trueDuration = trueDuration;
     self.animationDurationTotal = maxDuration;
     
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0) {
